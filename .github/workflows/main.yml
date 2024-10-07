@@ -38,7 +38,7 @@ jobs:
               echo "Uploading $file to the Workflow Bucket"
               gsutil cp "$file" $WORKFLOW_BUCKET
             else
-              echo "Uploading $file to the Default Bucket"
+              echo "Uploading $file to the $DEFAULT_BUCKET Default Bucket : gsutil cp "$file" $DEFAULT_BUCKET"
               gsutil cp "$file" $DEFAULT_BUCKET
             fi
           done

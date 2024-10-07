@@ -1,44 +1,31 @@
-name: Conditional Upload to GCS
+name: GCS Deployment
 
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
 on:
   push:
-    branches:
-      - main  # Trigger on pushes to the main branch
-  workflow_dispatch:
+    branches: [ main ]
 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  conditional-upload:
+  # This workflow contains a single job called "deploy"
+  deploy:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Step 1: Checkout the repository code
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
 
-      # Step 2: Setup gcloud CLI for GCP authentication
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id: ${{ vars.GCP_PROJECT_ID }}  # Ensure this is set correctly in GitHub variables
-          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+    # Setup gcloud CLI
+    - uses: google-github-actions/setup-gcloud@v0
+      with:
+        service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        project_id: ${{ vars.vars.GCP_PROJECT_ID }}
 
-      # Step 3: Find files and differentiate based on their names
-      - name: Upload files to GCS based on condition
-        run: |
-          # Create variables for the bucket names
-          WORKFLOW_BUCKET="gs://us-central1-test-airflow-3-dd37b258-bucket"
-          DEFAULT_BUCKET="gs://stage_bkt9283"
-
-          # Loop through all files in the repository
-          for file in $(find . -type f); do
-            echo "Processing file: $file"
-
-            # Check if the file name contains 'workflow'
-            if [[ "$file" == *workflow* ]]; then
-              echo "Uploading $file to the Workflow Bucket"
-              gsutil cp "$file" "$WORKFLOW_BUCKET"  # Added quotes around the bucket variable
-            else
-              echo "Uploading $file to the Default Bucket"
-              gsutil cp "$file" "$DEFAULT_BUCKET"  # Fixed the echo statement for clarity
-            fi
-          done
+    - name: Deploy via GCS
+      run: |
+        gsutil -m rm -rf gs://stage_bkt9283/* || echo "$?"
+        gsutil -m cp -r * gs://stage_bkt9283/

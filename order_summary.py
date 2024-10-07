@@ -6,6 +6,7 @@ def create_dataframe(url,cols="*"):
     df = spark.read.csv(url,header=True).select(cols)
     return df
 
+spark.conf.set('temporaryGcsBucket', 'gs://temp-9283')
 print("job started")
 orders_tbl = 'gs://sales_data_9283/synthetic_sales_data/orders.csv'
 customers_tbl = 'gs://sales_data_9283/synthetic_sales_data/customers.csv'
@@ -28,3 +29,7 @@ df_orders_joined = df_orders_joined.withColumn('sales_amount',df_orders_joined.q
 df_grouped = df_orders_joined.groupBy('order_id','customer_id','customer_segment','order_date','region','order_status','category','sub_category','brand').agg(sum("quantity").alias('total_quantity'),sum('sales_amount').alias('total_sales_amount'),sum('discount_amount').alias('total_discount_amount'),countDistinct('product_id').alias('distinct_products'))
 print("writing to cloud storage.")
 df_grouped.write.mode("overwrite").parquet('gs://sales_analysis_curated_bkt/order_summary')
+df_grouped.write.format('bigquery') \
+  .option('table', 'ecommerce_analytics.order_summary') \
+.mode('overwrite')\
+  .save()

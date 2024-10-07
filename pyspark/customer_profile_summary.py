@@ -9,7 +9,7 @@ def create_dataframe(url,cols="*",file_type='csv'):
     if file_type=='parquet':
         df = spark.read.parquet(url).select(cols)
     return df
-    
+
 spark.conf.set('temporaryGcsBucket', 'gs://temp-9283')
 
 order_summary_tbl = 'gs://sales_analysis_curated_bkt/order_summary/'

@@ -26,8 +26,8 @@ jobs:
       - name: Upload files to GCS based on condition
         run: |
           # Create variables for the bucket names
-          WORKFLOW_BUCKET="gs://us-central1-test-airflow-3-dd37b258-bucket/dags/"
-          DEFAULT_BUCKET="gs://stage_bkt9283/code/"
+          WORKFLOW_BUCKET="gs://us-central1-test-airflow-3-dd37b258-bucket"
+          DEFAULT_BUCKET="gs://stage_bkt9283"
 
           # Loop through all files in the repository
           for file in $(find . -type f); do

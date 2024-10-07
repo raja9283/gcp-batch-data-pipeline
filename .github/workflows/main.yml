@@ -15,7 +15,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    # Checks out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
     # Setup gcloud CLI
@@ -23,9 +23,24 @@ jobs:
       with:
         service_account_email: ${{ secrets.GCP_SA_EMAIL }}
         service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        project_id: ${{ vars.vars.GCP_PROJECT_ID }}
+        project_id: ${{ vars.GCP_PROJECT_ID }}  # Fixed variable reference
 
-    - name: Deploy via GCS
+    - name: Conditional Upload to GCS
       run: |
-        gsutil -m rm -rf gs://stage_bkt9283/* || echo "$?"
-        gsutil -m cp -r * gs://stage_bkt9283/
+        # Create variables for the bucket names
+        WORKFLOW_BUCKET="gs://us-central1-test-airflow-3-dd37b258-bucket"
+        DEFAULT_BUCKET="gs://stage_bkt9283"
+
+        # Loop through all files in the repository
+        for file in $(find . -type f); do
+          echo "Processing file: $file"
+
+          # Check if the file name contains 'workflow'
+          if [[ "$file" == *workflow* ]]; then
+            echo "Uploading $file to the Workflow Bucket"
+            gsutil cp "$file" $WORKFLOW_BUCKET
+          else
+            echo "Uploading $file to the Default Bucket"
+            gsutil cp "$file" $DEFAULT_BUCKET
+          fi
+        done

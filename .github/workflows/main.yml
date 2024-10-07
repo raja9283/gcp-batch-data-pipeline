@@ -1,0 +1,43 @@
+name: Conditional Upload to GCS
+
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to the main branch
+
+jobs:
+  conditional-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Setup gcloud CLI for GCP authentication
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: YOUR_PROJECT_ID  # Replace with your GCP project ID
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      # Step 3: Find files and differentiate based on their names
+      - name: Upload files to GCS based on condition
+        run: |
+          # Create variables for the bucket names
+          WORKFLOW_BUCKET="gs://us-central1-test-airflow-3-dd37b258-bucket/dags/"
+          DEFAULT_BUCKET="gs://stage_bkt9283/code"
+
+          # Loop through all files in the repository
+          for file in $(find . -type f); do
+            echo "Processing file: $file"
+
+            # Check if the file name contains 'workflow'
+            if [[ "$file" == *workflow* ]]; then
+              echo "Uploading $file to the Workflow Bucket"
+              gsutil cp "$file" $WORKFLOW_BUCKET
+            else
+              echo "Uploading $file to the Default Bucket"
+              gsutil cp "$file" $DEFAULT_BUCKET
+            fi
+          done

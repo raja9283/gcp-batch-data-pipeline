@@ -19,7 +19,7 @@ jobs:
       - name: Setup gcloud CLI
         uses: google-github-actions/setup-gcloud@v1
         with:
-          project_id: ${{ vars.GCP_PROJECT_ID }}  # Replace with your GCP project ID
+          project_id: ${{ vars.GCP_PROJECT_ID }}  # Ensure this is set correctly in GitHub variables
           service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
       # Step 3: Find files and differentiate based on their names
@@ -36,9 +36,9 @@ jobs:
             # Check if the file name contains 'workflow'
             if [[ "$file" == *workflow* ]]; then
               echo "Uploading $file to the Workflow Bucket"
-              gsutil cp "$file" "$WORKFLOW_BUCKET"
+              gsutil cp "$file" "$WORKFLOW_BUCKET"  # Added quotes around the bucket variable
             else
-              echo "Uploading $file to the $DEFAULT_BUCKET Default Bucket"
-              gsutil cp "$file" "$DEFAULT_BUCKET"
+              echo "Uploading $file to the Default Bucket"
+              gsutil cp "$file" "$DEFAULT_BUCKET"  # Fixed the echo statement for clarity
             fi
           done

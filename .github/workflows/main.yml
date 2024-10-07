@@ -36,7 +36,9 @@ jobs:
             # Check if the file name contains 'workflow'
             if [[ "$file" == *workflow* ]]; then
               echo "Uploading $file to the Workflow Bucket"
-              gsutil cp "$file" $WORKFLOW_BUCKET
-            
+              gsutil cp "$file" "$WORKFLOW_BUCKET"
+            else
+              echo "Uploading $file to the $DEFAULT_BUCKET Default Bucket"
+              gsutil cp "$file" "$DEFAULT_BUCKET"
             fi
           done

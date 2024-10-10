@@ -1,7 +1,7 @@
 # GCP Batch Data Pipeline Project
 
 ## Project Overview
-This project implements a robust batch data pipeline on Google Cloud Platform (GCP) utilizing services such as Cloud Storage, Dataproc, BigQuery, and Cloud Composer (Airflow). The pipeline ingests sales data encompassing customer, product, orders, order_items, and transaction information. It efficiently transforms this data to extract insights, including order summaries and monthly sales, which are visualized in a Looker Studio dashboard.
+This project implements a robust batch data pipeline on Google Cloud Platform (GCP) utilizing services such as Cloud Storage, Dataproc, BigQuery, and Cloud Composer (Airflow). Leveraging the capabilities of PySpark, the pipeline handles complex operations like joins, window functions, and data transformations to efficiently process sales data encompassing customer, product, orders, order_items, and transaction information. It extracts valuable insights, including order summaries and monthly sales, which are visualized in a Looker Studio dashboard.
 
 ## Architecture Overview
 

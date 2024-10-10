@@ -41,7 +41,7 @@ jobs:
             gsutil cp "$file" $WORKFLOW_BUCKET
           elif [[ "$file" == ./pyspark/* ]]; then
             echo "Uploading $file to the Default Bucket"
-            gsutil cp "$file" $DEFAULT_BUCKET
+            gsutil cp "$file" $DATAFLOW_BUCKET
           else
             echo "Skipping $file as it does not match the defined directories"
           fi

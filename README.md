@@ -49,7 +49,8 @@ This project implements a robust batch data pipeline on Google Cloud Platform (G
 - **`pyspark/`**: PySpark code used for data transformation.
 - **`.github/workflows/`**: GitHub Actions workflow files for CI/CD, uploading PySpark and Airflow files to Google Cloud Storage.
 - **`requirements.txt`**: Lists all required Python packages for the project.
-- **`sample_config.json`**: Configuration file with sensitive keys (values removed for confidentiality).
+- **`sample_config.json`**: Configuration file containing important parameters such as bucket paths, table names, and other settings required for the pipeline execution. This file is essential for configuring data source and destination details.
+
 
 ## Troubleshooting & Debugging
 

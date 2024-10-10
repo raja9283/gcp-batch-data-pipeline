@@ -4,10 +4,32 @@ from airflow import DAG
 from airflow.providers.google.cloud.operators.dataproc import DataprocSubmitJobOperator
 from airflow.providers.google.cloud.transfers.gcs_to_local import GCSToLocalFilesystemOperator
 from datetime import datetime
-from ..pyspark. utils import utils
+import json
+from google.cloud import storage
+from urllib.parse import urlparse
 
-utils.load_env()
-config = utils.config_details()
+def read_and_load_gcs_file(gcs_path):
+    """Reads a .env or config.json file from a GCS path and loads its contents as environment variables."""
+    # Parse the GCS path
+    parsed_url = urlparse(gcs_path)
+    bucket_name = parsed_url.netloc
+    file_path = parsed_url.path.lstrip('/')  # Remove leading slash from path
+
+    # Initialize the GCS client
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(file_path)
+
+    # Read the contents of the file as text
+    file_data = blob.download_as_text()
+
+    # Parse JSON file and set environment variables
+    config_vars = json.loads(file_data)
+    
+    return config_vars
+
+config = read_and_load_gcs_file('gs://stage_bkt9283/code/config.json')
+
 
 
 # Default arguments for the DAG
@@ -31,9 +53,9 @@ with DAG(
 ) as dag:
 
     # Define the cluster name and region
-    CLUSTER_NAME = os.getenv('CLUSTER_NAME')
-    REGION = os.getenv('REGION')
-    PROJECT_ID = os.getenv('PROJECT_ID')
+    CLUSTER_NAME = config['cluster_name']
+    REGION = config['region']
+    PROJECT_ID = config['project_id']
     ORDER_SUMMARY_URL = config['dataflow_source']['order_summary_url']
     CUSTOMER_TRANSACTIONS_URL = config['dataflow_source']['customer_transactions_url']
     CUSTOMER_PROFILE_SUMMARY_URL = config['dataflow_source']['customer_profile_summary_url']

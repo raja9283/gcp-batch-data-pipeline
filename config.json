@@ -1,4 +1,7 @@
 {
+    "cluster_name": "cluster-9fa3",
+    "region": "us-central1",
+    "project_id": "rising-field-430109-g4",
     "temp_bkt":"gs://temp-9283",
     "dataflow_source": {
         "order_summary_url": "gs://stage_bkt9283/code/order_summary.py",

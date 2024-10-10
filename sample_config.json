@@ -1,0 +1,32 @@
+{
+  "cluster_name": "",
+  "region": "",
+  "project_id": "",
+  "temp_bkt": "",
+  "dataflow_source": {
+    "order_summary_url": "",
+    "customer_transactions_url": "",
+    "customer_profile_summary_url": "",
+    "monthly_sales_url": "",
+    "customer_retention_url": "",
+    "monthly_performance_url": ""
+  },
+  "storage_bkt_path": {
+    "order_summary_tbl": "",
+    "customer_transactions_tbl": "",
+    "customers_tbl": "",
+    "monthly_sales_tbl": "",
+    "orders_tbl": "",
+    "order_items_tbl": "",
+    "products_tbl": "",
+    "customer_profile_summary_tbl": "",
+    "monthly_performance_tbl": "",
+    "customer_retention_tbl": ""
+  },
+  "bigquery_tables": {
+    "customer_profile_summary": "",
+    "customer_retention": "",
+    "monthly_performance": "",
+    "order_summary": ""
+  }
+}

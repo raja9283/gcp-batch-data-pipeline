@@ -1,9 +1,39 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.window import Window
-from utils import utils
+import json
+from google.cloud import storage
+from urllib.parse import urlparse
 
-config = utils.config_details()
+def read_and_load_gcs_file(gcs_path):
+    """Reads a .env or config.json file from a GCS path and loads its contents as environment variables."""
+    # Parse the GCS path
+    parsed_url = urlparse(gcs_path)
+    bucket_name = parsed_url.netloc
+    file_path = parsed_url.path.lstrip('/')  # Remove leading slash from path
+
+    # Initialize the GCS client
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(file_path)
+
+    # Read the contents of the file as text
+    file_data = blob.download_as_text()
+
+    # Parse JSON file and set environment variables
+    config_vars = json.loads(file_data)
+    
+    return config_vars
+
+    
+def create_dataframe(url,cols="*",file_type='csv'):
+    if file_type=='csv':
+        df = spark.read.csv(url,header=True).select(cols)
+    if file_type=='parquet':
+        df = spark.read.parquet(url).select(cols)
+    return df
+config = read_and_load_gcs_file('gs://stage_bkt9283/code/config.json')
+
 
 spark = SparkSession.builder.appName("Test").getOrCreate()
 spark.conf.set('temporaryGcsBucket', config['temp_bkt'])
@@ -13,9 +43,9 @@ customer_transactions_tbl = config['storage_bkt_path']['customer_transactions_tb
 customers_tbl = config['storage_bkt_path']['customers_tbl']
 
 
-df_order_summary = utils.create_dataframe(order_summary_tbl,file_type='parquet')
-df_customer_transactions = utils.create_dataframe(customer_transactions_tbl,file_type='parquet')
-df_customers = utils.create_dataframe(customers_tbl,['customer_id','customer_segment','region'])
+df_order_summary = create_dataframe(order_summary_tbl,file_type='parquet')
+df_customer_transactions = create_dataframe(customer_transactions_tbl,file_type='parquet')
+df_customers = create_dataframe(customers_tbl,['customer_id','customer_segment','region'])
 
 df_customer_categories = df_order_summary.filter(df_order_summary.order_status=='completed')\
                             .groupBy('customer_id','category')\

@@ -28,8 +28,8 @@ jobs:
     - name: Conditional Upload to GCS
       run: |
         # Create variables for the bucket names
-        WORKFLOW_BUCKET="gs://us-central1-test-airflow-3-dd37b258-bucket/dags/"
-        DEFAULT_BUCKET="gs://stage_bkt9283/code/"
+        WORKFLOW_BUCKET=${{ vars.WORKFLOW_BUCKET }}
+        DATAFLOW_BUCKET=${{ vars.DATAFLOW_BUCKET }}
 
         # Loop through all files in the repository, excluding certain directories
         for file in $(find . -type f ! -path './.git/*' ! -path './.github/*' ! -path './*/*.yml' ! -path './*/*.yaml'); do

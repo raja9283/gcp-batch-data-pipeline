@@ -1,7 +1,7 @@
 name: GCS Deployment
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the main branch
+# Controls when the action will run. Triggers the workflow on push or pull request events
+# but only for the main branch
 on:
   push:
     branches: [ main ]
@@ -35,12 +35,14 @@ jobs:
         for file in $(find . -type f ! -path './.git/*' ! -path './.github/*' ! -path './*/*.yml' ! -path './*/*.yaml'); do
           echo "Processing file: $file"
 
-          # Check if the file name contains 'workflow'
-          if [[ "$file" == *workflow* ]]; then
+          # Check if the file is inside the 'airflow' or 'pyspark' directories
+          if [[ "$file" == ./airflow/* ]]; then
             echo "Uploading $file to the Workflow Bucket"
             gsutil cp "$file" $WORKFLOW_BUCKET
-          else
+          elif [[ "$file" == ./pyspark/* ]]; then
             echo "Uploading $file to the Default Bucket"
             gsutil cp "$file" $DEFAULT_BUCKET
+          else
+            echo "Skipping $file as it does not match the defined directories"
           fi
         done

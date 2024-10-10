@@ -1,19 +1,21 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
-spark = SparkSession.builder.appName("Test").getOrCreate()
+from utils import utils
 
-def create_dataframe(url,cols="*"):
-    df = spark.read.csv(url,header=True).select(cols)
-    return df
+config = utils.config_details()
+
+spark = SparkSession.builder.appName("Test").getOrCreate()
+spark.conf.set('temporaryGcsBucket', config['temp_bkt'])
+
 
 print("job started")
-orders_tbl = 'gs://sales_data_9283/synthetic_sales_data/orders.csv'
-customers_tbl = 'gs://sales_data_9283/synthetic_sales_data/customers.csv'
-order_items_tbl = 'gs://sales_data_9283/synthetic_sales_data/order_items.csv'
+orders_tbl = config['storage_bkt_path']['orders_tbl']
+customers_tbl = config['storage_bkt_path']['customers_tbl']
+order_items_tbl = config['storage_bkt_path']['order_items_tbl']
 
-df_orders = create_dataframe(orders_tbl)
-df_customers = create_dataframe(customers_tbl,['customer_id','customer_segment'])
-df_order_items = create_dataframe(order_items_tbl,['order_id','product_id','quantity','price_per_unit'])
+df_orders = utils.create_dataframe(orders_tbl)
+df_customers = utils.create_dataframe(customers_tbl,['customer_id','customer_segment'])
+df_order_items = utils.create_dataframe(order_items_tbl,['order_id','product_id','quantity','price_per_unit'])
 
 print("files read completed")
 df_orders_filterd = df_orders.filter(df_orders.order_status =='completed')
@@ -30,4 +32,4 @@ df_grouped = df_orders_joined.groupBy('order_month','customer_id','customer_segm
                                                                                          countDistinct('product_id').alias('distinct_products_purchased'))
 
 print("writing to cloud storage.")
-df_grouped.write.mode('overwrite').parquet('gs://sales_analysis_curated_bkt/monthly_sales')
+df_grouped.write.mode('overwrite').parquet(config['storage_bkt_path']['monthly_sales_tbl'])

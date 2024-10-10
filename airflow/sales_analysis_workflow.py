@@ -1,8 +1,14 @@
+import os
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.providers.google.cloud.operators.dataproc import DataprocSubmitJobOperator
 from airflow.providers.google.cloud.transfers.gcs_to_local import GCSToLocalFilesystemOperator
 from datetime import datetime
+from ..pyspark. utils import utils
+
+utils.load_env()
+config = utils.config_details()
+
 
 # Default arguments for the DAG
 default_args = {
@@ -25,15 +31,15 @@ with DAG(
 ) as dag:
 
     # Define the cluster name and region
-    CLUSTER_NAME = 'cluster-9fa3'
-    REGION = 'us-central1'
-    PROJECT_ID = 'rising-field-430109-g4'
-    ORDER_SUMMARY_URL = 'gs://stage_bkt9283/code/order_summary.py'
-    CUSTOMER_TRANSACTIONS_URL = 'gs://stage_bkt9283/code/customer_transactions.py'
-    CUSTOMER_PROFILE_SUMMARY_URL = 'gs://stage_bkt9283/code/customer_profile_summary.py'
-    MONTHLY_SALES_URL = 'gs://stage_bkt9283/code/monthly_sales.py'
-    CUSTOMER_RETENTION_URL = 'gs://stage_bkt9283/code/customer_retention.py'
-    MONTHLY_PERFORMANCE_URL = 'gs://stage_bkt9283/code/monthly_performance.py'
+    CLUSTER_NAME = os.getenv('CLUSTER_NAME')
+    REGION = os.getenv('REGION')
+    PROJECT_ID = os.getenv('PROJECT_ID')
+    ORDER_SUMMARY_URL = config['dataflow_source']['order_summary_url']
+    CUSTOMER_TRANSACTIONS_URL = config['dataflow_source']['customer_transactions_url']
+    CUSTOMER_PROFILE_SUMMARY_URL = config['dataflow_source']['customer_profile_summary_url']
+    MONTHLY_SALES_URL = config['dataflow_source']['monthly_sales_url']
+    CUSTOMER_RETENTION_URL = config['dataflow_source']['customer_retention_url']
+    MONTHLY_PERFORMANCE_URL = config['dataflow_source']['monthly_performance_url']
     
     # Define the first Dataproc job
     order_summary = DataprocSubmitJobOperator(

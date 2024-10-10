@@ -1,0 +1,31 @@
+{
+    "temp_bkt":"gs://temp-9283",
+    "dataflow_source": {
+        "order_summary_url": "gs://stage_bkt9283/code/order_summary.py",
+        "customer_transactions_url": "gs://stage_bkt9283/code/customer_transactions.py",
+        "customer_profile_summary_url": "gs://stage_bkt9283/code/customer_profile_summary.py",
+        "monthly_sales_url": "gs://stage_bkt9283/code/monthly_sales.py",
+        "customer_retention_url": "gs://stage_bkt9283/code/customer_retention.py",
+        "monthly_performance_url": "gs://stage_bkt9283/code/monthly_performance.py"},
+    
+        "storage_bkt_path":{
+            "order_summary_tbl": "gs://sales_analysis_curated_bkt/order_summary/",
+            "customer_transactions_tbl": "gs://sales_analysis_curated_bkt/customer_transactions/",
+            "customers_tbl": "gs://sales_data_9283/synthetic_sales_data/customers.csv",
+            "monthly_sales_tbl": "gs://sales_analysis_curated_bkt/monthly_sales",
+            "orders_tbl": "gs://sales_data_9283/synthetic_sales_data/orders.csv",
+            "order_items_tbl": "gs://sales_data_9283/synthetic_sales_data/order_items.csv",
+            "products_tbl": "gs://sales_data_9283/synthetic_sales_data/products.csv",
+            "customer_profile_summary_tbl":"gs://sales_analysis_agg_bkt/customer_profile_summary",
+            "monthly_performance_tbl":"gs://sales_analysis_agg_bkt/monthly_performance",
+            "customer_retention_tbl":"gs://sales_analysis_agg_bkt/customer_retention"
+            
+        },
+        "bigquery_tables":{
+            "customer_profile_summary":"ecommerce_analytics.customer_profile_summary",
+            "customer_retention":"ecommerce_analytics.customer_retention",
+            "monthly_performance":"ecommerce_analytics.monthly_performance",
+            "order_summary":"ecommerce_analytics.order_summary"
+        }
+    
+}

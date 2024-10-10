@@ -1,0 +1,6 @@
+pandas
+numpy
+Faker
+apache-airflow
+apache-airflow-providers-google
+pyspark
